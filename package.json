@@ -1,0 +1,23 @@
+{
+  "name": "omniknight",
+  "version": "0.0.0",
+  "description": "",
+  "main": "web.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/perran/omniherokuapp"
+  },
+  "author": "per.hjelm",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/perran/omniherokuapp/issues"
+  },
+  "homepage": "https://github.com/perran/omniherokuapp",
+  "dependencies": {
+    "logfmt": "^1.1.2",
+    "express": "^3.5.1"
+  }
+}
