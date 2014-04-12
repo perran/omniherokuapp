@@ -53,8 +53,8 @@ app.get('/tweetsjson', function(request, response)
       pathname: '/1.1/statuses/user_timeline.json',
       query: query
     }),
-    'accesstokennotnecessary',
-    'secretaccesstokennotnecessary',
+    '2435972731-YtCkMs7IOiHUJ2R6PAS1jOmy9no6qyYxnstIETr', //access token
+    'grj3KBXutgvPnJ7lPHsfCystqOr6yl9W3L7lpLfQUEqKI',//secret access token
     function(err, data) 
 	{
       if (err) 

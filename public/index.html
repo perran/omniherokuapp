@@ -10,7 +10,7 @@
 <script>
 	function getArticles()
 	{
-		doGetRequest("../tweetsjson", presentArticles);
+		doGetRequest("../tweetsjson?count=2", presentArticles);
 	}
 	
 	function presentArticles(responseText)
