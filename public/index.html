@@ -4,4 +4,40 @@
 </head>
 <body>
 	<p>Omniknight is going strong</p>
+	<p id='articles'></p>
 </body>
+
+<script>
+	function getArticles()
+	{
+		doGetRequest("../tweetsjson", presentArticles);
+	}
+	
+	function presentArticles(responseText)
+	{
+		document.getElementById('articles').innerHTML = (responseText);
+	}
+	
+	function doGetRequest(url, onSuccess)
+	{
+		var xmlhttp = new XMLHttpRequest();
+		xmlhttp.onreadystatechange=function()
+		{
+			if (xmlhttp.readyState==4 && xmlhttp.status==200)
+			{
+				onSuccess(xmlhttp.responseText);
+			}
+		}
+		
+		xmlhttp.onError = function(error)
+		{
+			console.error('error: ' + error);
+		}
+		
+		xmlhttp.open("GET",url,true);
+		xmlhttp.send();	
+	}
+	
+	getArticles();
+</script>
+</html>

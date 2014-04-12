@@ -11,18 +11,13 @@ app.use(logfmt.requestLogger());
 
 app.get('/', function(req, res) 
 {
-  res.send('Hello World!');
+  res.send('Up and running');
 });
 
 //PAGE
-
 app.use('/static', express.static(__dirname + '/public'));
 
-
 //TWEET TWEET TWEET
-
-  var articles = [];
-
 app.get('/tweetsjson', function(request, response) 
 {
   var query = 
@@ -30,15 +25,13 @@ app.get('/tweetsjson', function(request, response)
     'trim_user': '1',
 	'screen_name':'omni_red'
   };
-
+  
   var count = parseInt(request.param('count'));
 
   if (!isNaN(count)) 
   {
     query.count = count;
   }
-
-  console.log("query: " + query);
   
   var twitter = new oauth.OAuth(
     'https://api.twitter.com/oauth/request_token',
@@ -50,12 +43,8 @@ app.get('/tweetsjson', function(request, response)
     'HMAC-SHA1'
   );
 
-  var tweets = [];
-  
   var articleIds = [];
-  
-
-  
+   
   twitter.get(
     url.format(
 	{
@@ -64,8 +53,8 @@ app.get('/tweetsjson', function(request, response)
       pathname: '/1.1/statuses/user_timeline.json',
       query: query
     }),
-    '2435972731-YtCkMs7IOiHUJ2R6PAS1jOmy9no6qyYxnstIETr', //access token
-    'grj3KBXutgvPnJ7lPHsfCystqOr6yl9W3L7lpLfQUEqKI',//secret access token
+    'accesstokennotnecessary',
+    'secretaccesstokennotnecessary',
     function(err, data) 
 	{
       if (err) 
@@ -73,80 +62,30 @@ app.get('/tweetsjson', function(request, response)
         response.jsonp(err);
       } 
 	  else 
-	  {
-        
-		//console.log("data: " + data);
+	  {       
         JSON.parse(data).forEach(function(tweet) 
 		{
 			var urly = tweet.entities.urls[0].expanded_url.split("/");
 			var articleId = urly[urly.length - 1];
-		
-          //tweets.push(
-		  //{
-            //'id_str': tweet.id_str,
-            //'created_at': tweet.created_at,
-            //'text': tweet.text,
-			//'expanded_url': articleId
-          //});
-		  articleIds.push(articleId);
-		  
+			articleIds.push(articleId);
         });
-		console.log("tweets pushed");
+
 		getArticleData(articleIds, response);
-/*
-        response.jsonp(
-		{
-          'statusCode': 200,
-          'data': tweets,
-		  'article'
-        });
-		
-*/
       }
     }
   );
-  
-  /*
-  
-  
-  http.get("https://s3-eu-west-1.amazonaws.com/omni-public-articles/86cd198c-479e-4cf1-8a27-6d411b823a48" + tweets[0][expanded_url], 
-	  function(res) 
-	  {
-		console.log("Got response: " + res);
-		
-		response.jsonp(
-		{
-          'statusCode': 200,
-          'data': tweets,
-		  'article': res
-        });
-		
-		
-	  }).on('error', function(e) 
-	  {
-		console.log("Got error: " + e.message);
-	  });
-*/
-
-  
-  
 });
 
 function getArticleData(articleIds, response)
 {
-	
-	//var articleUrl = "https://s3-eu-west-1.amazonaws.com/omni-public-articles/" + articleIds[0]
-	//console.log("articleUrl: ", articleUrl);
+	var articles = [];
 	var articleId;
+	var numberOfArticleIds = articleIds.length;
+	var requestsDone = 0;
 	for(articleId in articleIds)
 	{
 		https.get("https://s3-eu-west-1.amazonaws.com/omni-public-articles/" + articleIds[articleId] , function(res) 
 		{
-			//console.log("statusCode: ", res.statusCode);
-			//console.log("headers: ", res.headers);
-
-			
-			
 			res.on('data', function(d) 
 			{	
 				try
@@ -157,21 +96,19 @@ function getArticleData(articleIds, response)
 				{
 					console.log(errore);
 				}
-				//console.log("articleJson: ", articleJson);
+
 				var title = articleJson.title;	
 				var articleText = articleJson.resources[1].text;
 				
 				var article = {'title':title, 'articleText':articleText};
 				
 				articles.push(article);
+				++requestsDone;
 				
-				response.jsonp(
+				if(requestsDone == numberOfArticleIds)
 				{
-				  'statusCode': 200,
-				  'articles': articles
-				});
-				
-				console.log("response fixed");
+					setResponses(articles, response);
+				}
 			});
 
 		}).on('error', function(e) 
@@ -179,6 +116,15 @@ function getArticleData(articleIds, response)
 			console.error(e);
 		});
 	}
+}
+
+function setResponses(articles, response)
+{
+	response.jsonp(
+	{
+	  'statusCode': 200,
+	  'articles': articles
+	});
 }
 
 //TWEET TWEET TWEET
