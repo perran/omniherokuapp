@@ -1,3 +1,4 @@
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <html>
 <head>
 	<title>Omniknight</title>
@@ -18,6 +19,9 @@
 		background-image: linear-gradient(lightgrey, white 3em); /* Standard syntax */
 
 		box-shadow: 5px 5px 5px lightgrey;
+		
+		max-width: 45em;
+		width: 100%;
 	}
 
 	.title
@@ -26,11 +30,18 @@
 		font-weight: bold;
 	}
 	
+	.timestamp
+	{
+		font-size: 1em;
+		color: grey;
+	}
+	
 	.text
 	{
 		font-size: 1em;
 		max-width: 40em;
 		text-align: justify;	
+		width: 90%;
 	}
 </style>
 
@@ -56,16 +67,36 @@
 			var article = articles[i];
 			var title = article.title;
 			var articleText = article.articletext;
+			var firstPublished = article.firstpublished;
+			var datePublished = getDateFromTimeStamp(firstPublished);
 			
-			var htmlTitle = "<div id='title' class='title'>" + title + "</div>";
-			var htmlArticleText = "<div id='articletext' class='text'>" + articleText + "</div>";
-			var htmlArticle = "<div class='article'>" + htmlTitle + htmlArticleText + "</div><br>";
-			//htmlPresentableArticles.push(htmlArticle);
+			
+			var htmlTitle = "<div class='title'>" + title + "</div>";
+			var formattedDate = datePublished.toISOString().slice(0,10).replace(/-/g,"");
+			var htmlTimeStamp = "<div class='timestamp'>" + formattedDate + "</div>";
+			var htmlArticleText = "<div class='text'>" + articleText + "</div>";
+			var htmlArticle = "<div class='article'>" + htmlTitle + htmlTimeStamp + htmlArticleText + "</div><br>";
 			htmlPresentableArticles += htmlArticle;
 		}
 		
-		
 		document.getElementById('articles').innerHTML = htmlPresentableArticles;
+	}
+	
+	function getDateFromTimeStamp(timeStamp)
+	{
+		//the timestamp format looks like this: 2014-04-10T18:55:54.000Z 
+		var splittedTimeStamp = timeStamp.split(/-|:|T|\./);
+		var year = splittedTimeStamp[0];
+		var month = splittedTimeStamp[1];
+		var day = splittedTimeStamp[2];
+		var hour = splittedTimeStamp[3]; 
+		var minute = splittedTimeStamp[4]; 
+		var second = splittedTimeStamp[5]; 
+
+		var date = new Date(year, month, day, hour, minute, second);
+		date.setMonth(date.getMonth() - 1 ); //subtract a month the formats diff
+		
+		return date;
 	}
 	
 	function doGetRequest(url, onSuccess)

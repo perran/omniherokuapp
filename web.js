@@ -88,19 +88,37 @@ function getArticleData(articleIds, response)
 		{
 			res.on('data', function(d) 
 			{	
+				var title;
+				var articleText;
+				var firstPublished;
+				
 				try
 				{
 					var articleJson = JSON.parse(d);
+					title = articleJson.title;	
+					firstPublished = articleJson.firstPublished;
+					
+					
+					var resources = articleJson.resources;
+										
+					for(var resourceIndex in resources )
+					{
+						var resource = resources[resourceIndex];
+						var type = resource.type;
+						if(type == "text")
+						{
+							articleText = resource.text;
+						}
+					}
 				}
 				catch(errore)
 				{
 					console.log(errore);
+					title = "Json slashed the article...";
+					articleText = "ch-ch-ch-ah-ah-ah";
 				}
 
-				var title = articleJson.title;	
-				var articleText = articleJson.resources[1].text;
-				
-				var article = {'title':title, 'articletext':articleText};
+				var article = {'title':title, 'articletext':articleText, 'firstpublished':firstPublished};
 				
 				articles.push(article);
 				++requestsDone;
