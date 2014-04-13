@@ -9,7 +9,6 @@
 </body>
 
 <style>
-	
 	.article
 	{
 		background-color: white;
@@ -48,7 +47,7 @@
 <script>
 	function getArticles()
 	{
-		doGetRequest("../tweetsjson?count=2", extractArticleData);
+		doGetRequest("../tweetsjson?count=3", extractArticleData);
 	}
 	
 	function extractArticleData(responseText)
@@ -61,8 +60,10 @@
 	function presentArticles(articles)
 	{
 		var htmlPresentableArticles = "";
+		var numberOfArticles = articles.length;
+		var htmlArticles = [];
 		
-		for(var i = 0; i < articles.length; ++i)
+		for(var i = 0; i < numberOfArticles; ++i)
 		{
 			var article = articles[i];
 			var title = article.title;
@@ -70,15 +71,39 @@
 			var firstPublished = article.firstpublished;
 			var datePublished = getDateFromTimeStamp(firstPublished);
 			
-			
 			var htmlTitle = "<div class='title'>" + title + "</div>";
 			var formattedDate = datePublished.toISOString().slice(0,10).replace(/-/g,"");
 			var htmlTimeStamp = "<div class='timestamp'>" + formattedDate + "</div>";
 			var htmlArticleText = "<div class='text'>" + articleText + "</div>";
-			var htmlArticle = "<div class='article'>" + htmlTitle + htmlTimeStamp + htmlArticleText + "</div><br>";
-			htmlPresentableArticles += htmlArticle;
+			var htmlArticle = {};
+			htmlArticle.article = "<div class='article'>" + htmlTitle + htmlTimeStamp + htmlArticleText + "</div><br>";
+			htmlArticle.time = datePublished.getTime();
+			htmlArticles.push(htmlArticle);
+		}
+
+		sortArticlesInAscendingTimeOrder(htmlArticles);
+		htmlPresentableArticles = concatenateHtmlArticlesContent(htmlArticles);
+		addArticlesToHtml(htmlPresentableArticles);
+	}
+	
+	function sortArticlesInAscendingTimeOrder(htmlArticles)
+	{
+		htmlArticles.sort(function(a,b){return b.time-a.time});
+	}
+	
+	function concatenateHtmlArticlesContent(htmlArticles)
+	{
+		var htmlPresentableArticles = "";
+		for(i = 0; i < htmlArticles.length; ++i)
+		{
+			htmlPresentableArticles += htmlArticles[i].article;
 		}
 		
+		return htmlPresentableArticles;
+	}
+	
+	function addArticlesToHtml(htmlPresentableArticles)
+	{
 		document.getElementById('articles').innerHTML = htmlPresentableArticles;
 	}
 	
