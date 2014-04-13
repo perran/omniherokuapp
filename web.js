@@ -100,7 +100,7 @@ function getArticleData(articleIds, response)
 				var title = articleJson.title;	
 				var articleText = articleJson.resources[1].text;
 				
-				var article = {'title':title, 'articleText':articleText};
+				var article = {'title':title, 'articletext':articleText};
 				
 				articles.push(article);
 				++requestsDone;

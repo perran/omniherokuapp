@@ -4,18 +4,68 @@
 </head>
 <body>
 	<p>Omniknight is going strong</p>
-	<p id='articles'></p>
+	<div id='articles'></div>
 </body>
+
+<style>
+	
+	.article
+	{
+		background-color: white;
+		background-image: -webkit-linear-gradient(lightgrey, white 3em); /* For Safari 5.1 to 6.0 */
+		background-image: -o-linear-gradient(lightgrey, white 3em); /* For Opera 11.1 to 12.0 */
+		background-image: -moz-linear-gradient(lightgrey, white 3em); /* For Firefox 3.6 to 15 */
+		background-image: linear-gradient(lightgrey, white 3em); /* Standard syntax */
+
+		box-shadow: 5px 5px 5px lightgrey;
+	}
+
+	.title
+	{
+		font-size: 2em;
+		font-weight: bold;
+	}
+	
+	.text
+	{
+		font-size: 1em;
+		max-width: 40em;
+		text-align: justify;	
+	}
+</style>
 
 <script>
 	function getArticles()
 	{
-		doGetRequest("../tweetsjson?count=2", presentArticles);
+		doGetRequest("../tweetsjson?count=2", extractArticleData);
 	}
 	
-	function presentArticles(responseText)
+	function extractArticleData(responseText)
 	{
-		document.getElementById('articles').innerHTML = (responseText);
+		var jsonData = JSON.parse(responseText);
+		var articlesData = jsonData.articles;
+		presentArticles(articlesData);
+	}
+	
+	function presentArticles(articles)
+	{
+		var htmlPresentableArticles = "";
+		
+		for(var i = 0; i < articles.length; ++i)
+		{
+			var article = articles[i];
+			var title = article.title;
+			var articleText = article.articletext;
+			
+			var htmlTitle = "<div id='title' class='title'>" + title + "</div>";
+			var htmlArticleText = "<div id='articletext' class='text'>" + articleText + "</div>";
+			var htmlArticle = "<div class='article'>" + htmlTitle + htmlArticleText + "</div><br>";
+			//htmlPresentableArticles.push(htmlArticle);
+			htmlPresentableArticles += htmlArticle;
+		}
+		
+		
+		document.getElementById('articles').innerHTML = htmlPresentableArticles;
 	}
 	
 	function doGetRequest(url, onSuccess)
